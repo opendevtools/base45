@@ -66,7 +66,7 @@ jobs:
     if: ${{ success() && needs.test.outputs.new_release_published == 'true' }}
     needs: [test]
     env:
-      NAME: supreme-${{ needs.test.outputs.release }}-x86_64-apple-darwin
+      NAME: base45-${{ needs.test.outputs.release }}-x86_64-apple-darwin
       TARGET: x86_64-apple-darwin
     steps:
       - name: Checkout code
@@ -86,7 +86,7 @@ jobs:
         run: |
           cargo build --release --locked --target $TARGET
           mkdir "$NAME"
-          cp "target/$TARGET/release/supreme" "$NAME/"
+          cp "target/$TARGET/release/base45" "$NAME/"
           cp README.md "$NAME/"
           tar -czvf "$NAME.tar.gz" "$NAME"
 
