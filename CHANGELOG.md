@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/opendevtools/base45/compare/v1.0.0...v1.0.1) (2021-03-22)
+
+
+### Bug Fixes
+
+* update docs ([28b8e00](https://github.com/opendevtools/base45/commit/28b8e006d315d73d445b969ffedb37b8705d6164))
+
 # 1.0.0 (2021-03-22)
 
 
