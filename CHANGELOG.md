@@ -1,3 +1,10 @@
+## [1.0.2](https://github.com/opendevtools/base45/compare/v1.0.1...v1.0.2) (2021-03-22)
+
+
+### Bug Fixes
+
+* create release zip ([2587c27](https://github.com/opendevtools/base45/commit/2587c272f21b6eb7f02685a1841cfc280aeba53a))
+
 ## [1.0.1](https://github.com/opendevtools/base45/compare/v1.0.0...v1.0.1) (2021-03-22)
 
 
