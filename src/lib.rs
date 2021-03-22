@@ -18,7 +18,7 @@ fn divmod(x: usize, y: usize) -> (usize, usize) {
 
 /// Encode a string to base45
 ///
-/// The functions takes a string containing only characters in
+/// The function takes a string containing only characters in
 /// in the range U+0000 to U+00FF.
 ///
 /// ```rust,no_run
@@ -54,6 +54,8 @@ pub fn encode(input: &str) -> String {
 }
 
 /// Decode a string from base45
+///
+/// Takes a base45 encoded string and returns a UTF-8 string
 ///
 /// ```rust,no_run
 /// # fn main() -> Result<(), std::string::FromUtf8Error> {
