@@ -18,6 +18,9 @@ fn divmod(x: usize, y: usize) -> (usize, usize) {
 
 /// Encode a string to base45
 ///
+/// The functions takes a string containing only characters in
+/// in the range U+0000 to U+00FF.
+///
 /// ```rust,no_run
 /// # fn main() {
 /// let encoded = base45::encode("Hello!!");
