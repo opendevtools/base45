@@ -5,7 +5,7 @@
 [![API](https://docs.rs/base45/badge.svg)](https://docs.rs/base45)
 
 A encoder/decoder for base45 that is fully compatible with
-[draft-faltstrom-base45-02.txt](https://www.ietf.org/id/draft-faltstrom-base45-02). When encoding QR or Aztec codes a different scheme than the standard base64, base32, and base16 is needed.
+[draft-faltstrom-base45-02](https://www.ietf.org/id/draft-faltstrom-base45-02.txt). When encoding QR or Aztec codes a different scheme than the standard base64, base32, and base16 is needed.
 
 ## Installation
 
