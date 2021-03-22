@@ -1,3 +1,11 @@
+//! Encoder/decoder for base45 that is fully compatible with
+//! [draft-faltstrom-base45-02.txt](https://www.ietf.org/id/draft-faltstrom-base45-02.txt)
+//!
+//! ```rust,no_run
+//! # fn main() {
+//!     let encoded = base45::encode("Hello!!");
+//! # }
+//! ```
 mod alphabet;
 
 use alphabet::Base45;
@@ -8,6 +16,13 @@ fn divmod(x: usize, y: usize) -> (usize, usize) {
     ((x as f32 / y as f32).floor() as usize, x % y)
 }
 
+/// Encode a string to base45
+///
+/// ```rust,no_run
+/// # fn main() {
+/// let encoded = base45::encode("Hello!!");
+/// # }
+/// ```
 pub fn encode(input: &str) -> String {
     let chunks: Vec<&[u8]> = input.as_bytes().chunks(2).collect();
 
@@ -35,6 +50,14 @@ pub fn encode(input: &str) -> String {
         })
 }
 
+/// Decode a string from base45
+///
+/// ```rust,no_run
+/// # fn main() -> Result<(), std::string::FromUtf8Error> {
+/// let decoded = base45::decode("Hello!!")?;
+/// # Ok(())
+/// # }
+/// ```
 pub fn decode(input: &str) -> Result<String, std::string::FromUtf8Error> {
     let input_as_chars: Vec<Option<usize>> = input.chars().map(Base45::decode).collect();
     let chunked_input: Vec<&[Option<usize>]> = input_as_chars.chunks(3).collect();
