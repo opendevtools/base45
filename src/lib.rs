@@ -10,7 +10,7 @@ mod alphabet;
 
 use alphabet::Base45;
 
-pub const SIZE: usize = 45;
+const SIZE: usize = 45;
 
 fn divmod(x: usize, y: usize) -> (usize, usize) {
     ((x as f32 / y as f32).floor() as usize, x % y)
