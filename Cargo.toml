@@ -1,0 +1,14 @@
+[package]
+name = "base45"
+version = "0.1.0"
+authors = ["Rickard Natt och Dag <rickard@hey.com>"]
+edition = "2018"
+
+[dependencies]
+
+[dev-dependencies]
+criterion = "0.3"
+
+[[bench]]
+name = "bench"
+harness = false
