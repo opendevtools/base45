@@ -11,7 +11,7 @@ A encoder/decoder for base45 that is fully compatible with
 
 ```toml
 [dependencies]
-base45 = "1.0.0"
+base45 = "1.0.1"
 ```
 
 ## Benchmarks
