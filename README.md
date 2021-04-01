@@ -19,6 +19,7 @@ base45 = "1.0.1"
 Benchmarks were created using [Criterion](https://github.com/bheisler/criterion.rs). The benchmarks test encoding and decoding of the string "The quick brown fox jumps over the lazy dog". Test computer is a MacBook 16" (2019) with 2,6 GHz 6-Core Intel Core i7 and 32 GB 2667 MHz DDR4.
 
 ```
-encode long string      time:   [17.590 us 17.817 us 18.054 us]
-decode long string      time:   [3.2382 us 3.2938 us 3.3505 us]
+encode long string                time:   [6.0716 us 6.1040 us 6.1377 us]
+encode long string from buffer    time:   [6.0220 us 6.0547 us 6.0885 us]
+decode long string                time:   [1.0876 us 1.0993 us 1.1105 us]
 ```
