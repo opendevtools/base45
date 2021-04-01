@@ -1,3 +1,17 @@
+# [2.0.0](https://github.com/opendevtools/base45/compare/v1.0.2...v2.0.0) (2021-04-01)
+
+
+### Features
+
+* add encode_from_buffer ([f8b3892](https://github.com/opendevtools/base45/commit/f8b3892987a13f9fb2376ccb78adfb00d1e71950))
+* decode returns buffer ([dca8ddf](https://github.com/opendevtools/base45/commit/dca8ddf956df2219aea07e926928409a5426863f))
+
+
+### BREAKING CHANGES
+
+* decode used to return a string, now it returns a
+buffer and the user should convert it to a string
+
 ## [1.0.2](https://github.com/opendevtools/base45/compare/v1.0.1...v1.0.2) (2021-03-22)
 
 
