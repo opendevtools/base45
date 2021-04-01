@@ -77,11 +77,12 @@ pub fn encode_from_buffer(input: Vec<u8>) -> String {
 ///
 /// ```rust,no_run
 /// # fn main() -> Result<(), std::string::FromUtf8Error> {
-/// let decoded = base45::decode("Hello!!")?;
+/// let decoded = String::from_utf8(base45::decode("%69 VD92EX0"))?;
+/// assert_eq!(decoded, "Hello!!");
 /// # Ok(())
 /// # }
 /// ```
-pub fn decode(input: &str) -> Result<String, std::string::FromUtf8Error> {
+pub fn decode(input: &str) -> Vec<u8> {
     let input_as_chars: Vec<Option<usize>> = input.chars().map(Base45::decode).collect();
     let chunked_input: Vec<&[Option<usize>]> = input_as_chars.chunks(3).collect();
     let mut output: Vec<u8> = vec![];
@@ -100,7 +101,7 @@ pub fn decode(input: &str) -> Result<String, std::string::FromUtf8Error> {
         _ => unreachable!("Decode unsuccessful"),
     });
 
-    String::from_utf8(output)
+    output
 }
 
 #[cfg(test)]
@@ -147,22 +148,35 @@ mod tests {
 
     #[test]
     fn decode_ab() {
-        assert_eq!(decode("BB8").unwrap(), "AB")
+        assert_eq!(String::from_utf8(decode("BB8")).unwrap(), "AB")
     }
 
     #[test]
     fn decode_hello() {
-        assert_eq!(decode("%69 VD92EX0").unwrap(), "Hello!!")
+        assert_eq!(String::from_utf8(decode("%69 VD92EX0")).unwrap(), "Hello!!")
     }
 
     #[test]
     fn decode_base45() {
-        assert_eq!(decode("UJCLQE7W581").unwrap(), "base-45")
+        assert_eq!(String::from_utf8(decode("UJCLQE7W581")).unwrap(), "base-45")
     }
 
     #[test]
     fn decode_ietf() {
-        assert_eq!(decode("QED8WEX0").unwrap(), "ietf!")
+        assert_eq!(String::from_utf8(decode("QED8WEX0")).unwrap(), "ietf!")
+    }
+
+    #[test]
+    fn decode_long_string() {
+        assert_eq!(
+            String::from_utf8(decode(
+                "8UADZCKFEOEDJOD2KC54EM-DX.CH8FSKDQ$D.OE44E5$CS44+8DK44OEC3EFGVCD2"
+            ))
+            .unwrap(),
+            "The quick brown fox jumps over the lazy dog",
+        )
+    }
+
     #[test]
     fn encode_hello_from_buffer() {
         assert_eq!(
