@@ -16,20 +16,8 @@ fn divmod(x: usize, y: usize) -> (usize, usize) {
     ((x as f32 / y as f32).floor() as usize, x % y)
 }
 
-/// Encode a string to base45
-///
-/// The function takes a string containing only characters in
-/// in the range U+0000 to U+00FF.
-///
-/// ```rust,no_run
-/// # fn main() {
-/// let encoded = base45::encode("Hello!!");
-/// # }
-/// ```
-pub fn encode(input: &str) -> String {
-    let chunks: Vec<&[u8]> = input.as_bytes().chunks(2).collect();
-
-    chunks
+fn encode_buffer(input: Vec<&[u8]>) -> String {
+    input
         .iter()
         .map(|v| match v {
             [first, second] => {
@@ -51,6 +39,36 @@ pub fn encode(input: &str) -> String {
             (Some(c), Some(d), None) => format!("{}{}{}", acc, c, d),
             _ => acc,
         })
+}
+
+/// Encode a string to base45
+///
+/// The function takes a string containing only characters in
+/// in the range U+0000 to U+00FF.
+///
+/// ```rust,no_run
+/// # fn main() {
+/// let encoded = base45::encode("Hello!!");
+/// assert_eq!(encoded, "%69 VD92EX0");
+/// # }
+/// ```
+pub fn encode(input: &str) -> String {
+    encode_buffer(input.as_bytes().chunks(2).collect())
+}
+
+/// Encode a buffer to base45
+///
+/// The function takes a string containing only characters in
+/// in the range U+0000 to U+00FF.
+///
+/// ```rust,no_run
+/// # fn main() {
+/// let encoded = base45::encode_from_buffer(vec![72,101,108,108,111,33,33]);
+/// assert_eq!(encoded, "%69 VD92EX0");
+/// # }
+/// ```
+pub fn encode_from_buffer(input: Vec<u8>) -> String {
+    encode_buffer(input.chunks(2).collect())
 }
 
 /// Decode a string from base45
@@ -145,5 +163,11 @@ mod tests {
     #[test]
     fn decode_ietf() {
         assert_eq!(decode("QED8WEX0").unwrap(), "ietf!")
+    #[test]
+    fn encode_hello_from_buffer() {
+        assert_eq!(
+            encode_from_buffer(vec![72, 101, 108, 108, 111, 33, 33]),
+            "%69 VD92EX0"
+        )
     }
 }
