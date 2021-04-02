@@ -1,3 +1,10 @@
+## [2.0.1](https://github.com/opendevtools/base45/compare/v2.0.0...v2.0.1) (2021-04-02)
+
+
+### Bug Fixes
+
+* handle invalid strings ([c9957b5](https://github.com/opendevtools/base45/commit/c9957b5f43e8df798bb31086ea29c27452333e79))
+
 # [2.0.0](https://github.com/opendevtools/base45/compare/v1.0.2...v2.0.0) (2021-04-01)
 
 
