@@ -8,7 +8,7 @@ const TABLE: [char; 45] = [
 
 impl Base45 {
     pub fn decode(v: char) -> Option<usize> {
-        Some(TABLE.iter().position(|&r| r == v).unwrap())
+        TABLE.iter().position(|&r| r == v)
     }
 
     pub fn encode(n: usize) -> Option<char> {
