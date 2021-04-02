@@ -98,7 +98,7 @@ pub fn decode(input: &str) -> Vec<u8> {
         [Some(first), Some(second)] => {
             output.push((first + second * SIZE) as u8);
         }
-        _ => unreachable!("Decode unsuccessful"),
+        _ => panic!("This string cannot be decode. It might be out of range."),
     });
 
     output
@@ -111,6 +111,12 @@ mod tests {
     #[test]
     fn encode_ab() {
         assert_eq!(encode("AB"), "BB8")
+    }
+
+    #[test]
+    #[should_panic(expected = "This string cannot be decode. It might be out of range.")]
+    fn decode_fail() {
+        String::from_utf8(decode("a")).unwrap();
     }
 
     #[test]
