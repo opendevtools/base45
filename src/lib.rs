@@ -90,6 +90,11 @@ pub fn decode(input: &str) -> Vec<u8> {
     chunked_input.iter().for_each(|v| match v {
         [Some(first), Some(second), Some(third)] => {
             let v = first + second * SIZE + third * SIZE.pow(2);
+
+            if !(0..=65792).contains(&v) {
+                panic!("This is not a valid base45 string");
+            }
+
             let (x, y) = divmod(v, 256);
 
             output.push(x as u8);
@@ -98,7 +103,7 @@ pub fn decode(input: &str) -> Vec<u8> {
         [Some(first), Some(second)] => {
             output.push((first + second * SIZE) as u8);
         }
-        _ => panic!("This string cannot be decode. It might be out of range."),
+        _ => panic!("This is not a valid base45 string"),
     });
 
     output
@@ -114,9 +119,15 @@ mod tests {
     }
 
     #[test]
-    #[should_panic(expected = "This string cannot be decode. It might be out of range.")]
+    #[should_panic(expected = "This is not a valid base45 string")]
     fn decode_fail() {
-        String::from_utf8(decode("a")).unwrap();
+        String::from_utf8(decode(":")).unwrap();
+    }
+
+    #[test]
+    #[should_panic(expected = "This is not a valid base45 string")]
+    fn decode_fail_out_of_range() {
+        String::from_utf8(decode(":::")).unwrap();
     }
 
     #[test]
