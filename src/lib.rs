@@ -6,6 +6,10 @@
 //!     let encoded = base45::encode("Hello!!");
 //! # }
 //! ```
+
+use std::error::Error;
+use std::fmt::{Display, Formatter};
+
 mod alphabet;
 
 use alphabet::Base45;
@@ -71,42 +75,56 @@ pub fn encode_from_buffer(input: Vec<u8>) -> String {
     encode_buffer(input.chunks(2).collect())
 }
 
+/// The error type returned when the input is not a valid base45 string
+#[derive(Eq, PartialEq, Copy, Clone, Debug)]
+pub struct DecodeError();
+
+impl Display for DecodeError {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        f.write_str("Invalid base45 string")
+    }
+}
+
+impl Error for DecodeError {}
+
 /// Decode a string from base45
 ///
-/// Takes a base45 encoded string and returns a UTF-8 string
+/// Takes a base45 encoded string and returns a UTF-8 string on success
 ///
 /// ```rust,no_run
-/// # fn main() -> Result<(), std::string::FromUtf8Error> {
-/// let decoded = String::from_utf8(base45::decode("%69 VD92EX0"))?;
+/// # fn main() -> Result<(), Box<dyn std::error::Error>> {
+/// let decoded = String::from_utf8(base45::decode("%69 VD92EX0")?)?;
 /// assert_eq!(decoded, "Hello!!");
 /// # Ok(())
 /// # }
 /// ```
-pub fn decode(input: &str) -> Vec<u8> {
+pub fn decode(input: &str) -> Result<Vec<u8>, DecodeError> {
     let input_as_chars: Vec<Option<usize>> = input.chars().map(Base45::decode).collect();
     let chunked_input: Vec<&[Option<usize>]> = input_as_chars.chunks(3).collect();
     let mut output: Vec<u8> = vec![];
 
-    chunked_input.iter().for_each(|v| match v {
-        [Some(first), Some(second), Some(third)] => {
-            let v = first + second * SIZE + third * SIZE.pow(2);
+    for v in chunked_input {
+        match v {
+            [Some(first), Some(second), Some(third)] => {
+                let v = first + second * SIZE + third * SIZE.pow(2);
 
-            if !(0..=65792).contains(&v) {
-                panic!("This is not a valid base45 string");
+                if !(0..=65792).contains(&v) {
+                    return Err(DecodeError());
+                }
+
+                let (x, y) = divmod(v, 256);
+
+                output.push(x as u8);
+                output.push(y as u8);
             }
-
-            let (x, y) = divmod(v, 256);
-
-            output.push(x as u8);
-            output.push(y as u8);
+            [Some(first), Some(second)] => {
+                output.push((first + second * SIZE) as u8);
+            }
+            _ => return Err(DecodeError()),
         }
-        [Some(first), Some(second)] => {
-            output.push((first + second * SIZE) as u8);
-        }
-        _ => panic!("This is not a valid base45 string"),
-    });
+    }
 
-    output
+    Ok(output)
 }
 
 #[cfg(test)]
@@ -119,15 +137,13 @@ mod tests {
     }
 
     #[test]
-    #[should_panic(expected = "This is not a valid base45 string")]
     fn decode_fail() {
-        String::from_utf8(decode(":")).unwrap();
+        assert!(decode(":::").is_err());
     }
 
     #[test]
-    #[should_panic(expected = "This is not a valid base45 string")]
     fn decode_fail_out_of_range() {
-        String::from_utf8(decode(":::")).unwrap();
+        assert!(decode(":::").is_err());
     }
 
     #[test]
@@ -165,30 +181,40 @@ mod tests {
 
     #[test]
     fn decode_ab() {
-        assert_eq!(String::from_utf8(decode("BB8")).unwrap(), "AB")
+        assert_eq!(String::from_utf8(decode("BB8").unwrap()).unwrap(), "AB")
     }
 
     #[test]
     fn decode_hello() {
-        assert_eq!(String::from_utf8(decode("%69 VD92EX0")).unwrap(), "Hello!!")
+        assert_eq!(
+            String::from_utf8(decode("%69 VD92EX0").unwrap()).unwrap(),
+            "Hello!!"
+        )
     }
 
     #[test]
     fn decode_base45() {
-        assert_eq!(String::from_utf8(decode("UJCLQE7W581")).unwrap(), "base-45")
+        assert_eq!(
+            String::from_utf8(decode("UJCLQE7W581").unwrap()).unwrap(),
+            "base-45"
+        )
     }
 
     #[test]
     fn decode_ietf() {
-        assert_eq!(String::from_utf8(decode("QED8WEX0")).unwrap(), "ietf!")
+        assert_eq!(
+            String::from_utf8(decode("QED8WEX0").unwrap()).unwrap(),
+            "ietf!"
+        )
     }
 
     #[test]
     fn decode_long_string() {
         assert_eq!(
-            String::from_utf8(decode(
-                "8UADZCKFEOEDJOD2KC54EM-DX.CH8FSKDQ$D.OE44E5$CS44+8DK44OEC3EFGVCD2"
-            ))
+            String::from_utf8(
+                decode("8UADZCKFEOEDJOD2KC54EM-DX.CH8FSKDQ$D.OE44E5$CS44+8DK44OEC3EFGVCD2")
+                    .unwrap()
+            )
             .unwrap(),
             "The quick brown fox jumps over the lazy dog",
         )

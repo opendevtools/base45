@@ -21,9 +21,12 @@ fn encode_from_buffer(c: &mut Criterion) {
 fn decode(c: &mut Criterion) {
     c.bench_function("decode long string", |b| {
         b.iter(|| {
-            String::from_utf8(base45::decode(black_box(
-                "8UADZCKFEOEDJOD2KC54EM-DX.CH8FSKDQ$D.OE44E5$CS44+8DK44OEC3EFGVCD2",
-            )))
+            String::from_utf8(
+                base45::decode(black_box(
+                    "8UADZCKFEOEDJOD2KC54EM-DX.CH8FSKDQ$D.OE44E5$CS44+8DK44OEC3EFGVCD2",
+                ))
+                .unwrap(),
+            )
             .unwrap()
         })
     });
