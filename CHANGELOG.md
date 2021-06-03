@@ -1,3 +1,15 @@
+# [3.0.0](https://github.com/opendevtools/base45/compare/v2.0.1...v3.0.0) (2021-06-03)
+
+
+### Features
+
+* return decoding errors ([#1](https://github.com/opendevtools/base45/issues/1)) ([185d311](https://github.com/opendevtools/base45/commit/185d311951e0f567dc9ccfd4c2cbf9219271ce45))
+
+
+### BREAKING CHANGES
+
+* Update the return value of `base45::decode` to `Result<_,_>`. This allows us to handle errors gracefully instead of panicking
+
 ## [2.0.1](https://github.com/opendevtools/base45/compare/v2.0.0...v2.0.1) (2021-04-02)
 
 
