@@ -14,10 +14,11 @@ mod alphabet;
 
 use alphabet::Base45;
 
-const SIZE: usize = 45;
+const SIZE: u16 = 45;
+const SIZE2: u16 = SIZE.pow(2);
 
-fn divmod(x: usize, y: usize) -> (usize, usize) {
-    ((x as f32 / y as f32).floor() as usize, x % y)
+fn divmod(x: u16, y: u16) -> (u8, u16) {
+    ((x / y) as u8, x % y)
 }
 
 fn encode_buffer(input: Vec<&[u8]>) -> String {
@@ -25,20 +26,22 @@ fn encode_buffer(input: Vec<&[u8]>) -> String {
         .iter()
         .map(|v| match v {
             [first, second] => {
-                let v = (*first as usize * 256) + *second as usize;
-                let (e, rest) = divmod(v, SIZE.pow(2));
+                let v = u16::from_be_bytes([*first, *second]);
+
+                let (e, rest) = divmod(v, SIZE2);
                 let (d, c) = divmod(rest, SIZE);
 
-                (Base45::encode(c), Base45::encode(d), Base45::encode(e))
+                (Base45::encode(c as u8), Base45::encode(d), Base45::encode(e))
             }
             [first] => {
-                let (d, c) = divmod(*first as usize, SIZE);
+                let v = *first as u16;
+                let (d, c) = divmod(v, SIZE);
 
-                (Base45::encode(c), Base45::encode(d), None)
+                (Base45::encode(c as u8), Base45::encode(d), None)
             }
             _ => (None, None, None),
         })
-        .fold("".to_string(), |acc, (c, d, e)| match (c, d, e) {
+        .fold("".into(), |acc, (c, d, e)| match (c, d, e) {
             (Some(c), Some(d), Some(e)) => format!("{}{}{}{}", acc, c, d, e),
             (Some(c), Some(d), None) => format!("{}{}{}", acc, c, d),
             _ => acc,
@@ -99,26 +102,34 @@ impl Error for DecodeError {}
 /// # }
 /// ```
 pub fn decode(input: &str) -> Result<Vec<u8>, DecodeError> {
-    let input_as_chars: Vec<Option<usize>> = input.chars().map(Base45::decode).collect();
-    let chunked_input: Vec<&[Option<usize>]> = input_as_chars.chunks(3).collect();
+    let input_as_chars: Vec<Option<u8>> = input.chars().map(Base45::decode).collect();
+    let chunked_input: Vec<&[Option<u8>]> = input_as_chars.chunks(3).collect();
     let mut output: Vec<u8> = vec![];
 
     for v in chunked_input {
         match v {
             [Some(first), Some(second), Some(third)] => {
-                let v = first + second * SIZE + third * SIZE.pow(2);
+                // We first need to work with an u32 register to properly detect overflow in
+                // case of invalid input
+                let first = *first as u32;
+                let second = *second as u32;
+                let third = *third as u32;
+                let size = SIZE as u32;
+                let size2 = SIZE2 as u32;
 
-                if !(0..=65792).contains(&v) {
+                let v = first + second * size + third * size2;
+
+                if v > u16::MAX as u32 {
                     return Err(DecodeError());
                 }
 
-                let (x, y) = divmod(v, 256);
+                // Now that the value is cleared, we can go back to u16
+                let v = v as u16;
 
-                output.push(x as u8);
-                output.push(y as u8);
+                v.to_be_bytes().iter().for_each(|b| output.push(*b));
             }
             [Some(first), Some(second)] => {
-                output.push((first + second * SIZE) as u8);
+                output.push(first + second * SIZE as u8);
             }
             _ => return Err(DecodeError()),
         }
@@ -130,6 +141,13 @@ pub fn decode(input: &str) -> Result<Vec<u8>, DecodeError> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn divmod_simple() {
+        assert_eq!(divmod(100, 10), (10, 0));
+        assert_eq!(divmod(101, 10), (10, 1));
+        assert_eq!(divmod(9, 10), (0, 9));
+    }
 
     #[test]
     fn encode_ab() {
