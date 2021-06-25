@@ -7,11 +7,11 @@ const TABLE: [char; 45] = [
 ];
 
 impl Base45 {
-    pub fn decode(v: char) -> Option<usize> {
-        TABLE.iter().position(|&r| r == v)
+    pub fn decode(v: char) -> Option<u8> {
+        TABLE.iter().position(|&r| r == v).map(|x| x as u8)
     }
 
-    pub fn encode(n: usize) -> Option<char> {
-        Some(TABLE[n])
+    pub fn encode(n: u8) -> Option<char> {
+        Some(TABLE[n as usize])
     }
 }
