@@ -104,7 +104,10 @@ impl Error for DecodeError {}
 pub fn decode(input: &str) -> Result<Vec<u8>, DecodeError> {
     let input_as_chars: Vec<Option<u8>> = input.chars().map(Base45::decode).collect();
     let chunked_input: Vec<&[Option<u8>]> = input_as_chars.chunks(3).collect();
-    let mut output: Vec<u8> = vec![];
+
+    // Output will be shorter than input after decode, so we can allocate at least
+    // input.len bytes upfront, avoiding reallocs
+    let mut output = Vec::<u8>::with_capacity(input.len());
 
     for v in chunked_input {
         match v {
