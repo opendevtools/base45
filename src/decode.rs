@@ -24,11 +24,15 @@ impl Error for DecodeError {}
 /// # Ok(())
 /// # }
 /// ```
-pub fn decode(input: &str) -> Result<Vec<u8>, DecodeError> {
+pub fn decode(input: impl AsRef<[u8]>) -> Result<Vec<u8>, DecodeError> {
+    decode_intl(input.as_ref())
+}
+/// Internal function to decode a string from base45, to reduce code bloat.
+fn decode_intl(input: &[u8]) -> Result<Vec<u8>, DecodeError> {
     // Setup indexing
     let input_as_idx: Vec<usize> = input
-        .bytes()
-        .map(|v| alphabet::decode(v).ok_or(DecodeError))
+        .iter()
+        .map(|v| alphabet::decode(*v).ok_or(DecodeError))
         .collect::<Result<Vec<usize>, DecodeError>>()?;
     let mut output = Vec::with_capacity(match input.len() & 1 {
         0 => input.len() * 2 / 3,

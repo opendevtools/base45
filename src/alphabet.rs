@@ -1,4 +1,4 @@
-const TABLE: [u8; 45] = *b"0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ $%*+-./:";
+pub const TABLE: [u8; 45] = *b"0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ $%*+-./:";
 pub fn decode(v: u8) -> Option<usize> {
     TABLE.iter().position(|&r| r == v)
 }

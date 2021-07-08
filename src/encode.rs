@@ -58,14 +58,13 @@ fn encode_buffer(input: &[u8]) -> String {
 /// assert_eq!(encoded, "%69 VD92EX0");
 /// # }
 /// ```
-pub fn encode(input: &str) -> String {
-    encode_buffer(input.as_bytes())
+pub fn encode(input: impl AsRef<[u8]>) -> String {
+    encode_buffer(input.as_ref())
 }
 
 /// Encode a buffer to base45
 ///
-/// The function takes a string containing only characters in
-/// in the range U+0000 to U+00FF.
+/// The function takes an arbitrary buffer and encodes it to base45.
 ///
 /// ```rust,no_run
 /// # fn main() {

@@ -77,14 +77,14 @@ fn decode_ietf() {
     )
 }
 
+const QUICK_BROWN_FOX_ENC: &str =
+    "8UADZCKFEOEDJOD2KC54EM-DX.CH8FSKDQ$D.OE44E5$CS44+8DK44OEC3EFGVCD2";
+const QUICK_BROWN_FOX_DEC: &str = "The quick brown fox jumps over the lazy dog";
 #[test]
 fn decode_long_string() {
     assert_eq!(
-        String::from_utf8(
-            decode("8UADZCKFEOEDJOD2KC54EM-DX.CH8FSKDQ$D.OE44E5$CS44+8DK44OEC3EFGVCD2").unwrap()
-        )
-        .unwrap(),
-        "The quick brown fox jumps over the lazy dog",
+        String::from_utf8(decode(QUICK_BROWN_FOX_ENC).unwrap()).unwrap(),
+        QUICK_BROWN_FOX_DEC,
     )
 }
 
@@ -95,3 +95,84 @@ fn encode_hello_from_buffer() {
         "%69 VD92EX0"
     )
 }
+
+#[bench]
+fn bench_encode_quick_brown_fox(b: &mut test::Bencher) {
+    b.iter(|| {
+        for _ in 0..100 {
+            let text = String::from(QUICK_BROWN_FOX_DEC);
+            let encoded = encode(&text);
+            assert_eq!(encoded, QUICK_BROWN_FOX_ENC);
+        }
+    });
+}
+
+fn rbe<const N: usize>(bench: &mut test::Bencher) {
+    use rand::*;
+    let mut rng = thread_rng();
+    let mut b = [0u8; N];
+    rng.fill_bytes(&mut b);
+    bench.iter(|| {
+        let encoded = encode_from_buffer(&b[..]);
+        assert!(encoded.is_ascii());
+    });
+}
+#[bench]
+fn bench_encode_random_0x10(b: &mut test::Bencher) {
+    rbe::<0x10>(b);
+}
+#[bench]
+fn bench_encode_random_0x100(b: &mut test::Bencher) {
+    rbe::<0x100>(b);
+}
+#[bench]
+fn bench_encode_random_0x1000(b: &mut test::Bencher) {
+    rbe::<0x1000>(b);
+}
+#[bench]
+fn bench_encode_random_0x10000(b: &mut test::Bencher) {
+    rbe::<0x10000>(b);
+}
+
+#[bench]
+fn bench_decode_quick_brown_fox(b: &mut test::Bencher) {
+    b.iter(|| {
+        for _ in 0..100 {
+            let text = String::from(QUICK_BROWN_FOX_ENC);
+            if let Ok(decoded) = decode(&text) {
+                assert_eq!(decoded, QUICK_BROWN_FOX_DEC.as_bytes());
+            }
+        }
+    });
+}
+
+// cursed code, really doesn't work
+
+// fn rbd<const N: usize>(bench: &mut test::Bencher) {
+//     use rand::{distributions::*, *};
+//     use std::convert::TryFrom;
+//     let mut rng = thread_rng();
+//     let sample = Slice::new(&crate::alphabet::TABLE).unwrap();
+//     let b: Vec<u8> = sample.sample_iter(rng).copied().take(N).collect();
+//     let b: [u8; N] = TryFrom::try_from(b).unwrap();
+//     bench.iter(|| {
+//         let decoded = decode(&b[..]);
+//         assert!(decoded.is_ok());
+//     });
+// }
+// #[bench]
+// fn bench_decode_random_3(b: &mut test::Bencher) {
+//     rbd::<3>(b);
+// }
+// #[bench]
+// fn bench_decode_random_30(b: &mut test::Bencher) {
+//     rbd::<30>(b);
+// }
+// #[bench]
+// fn bench_decode_random_3000(b: &mut test::Bencher) {
+//     rbd::<3000>(b);
+// }
+// #[bench]
+// fn bench_decode_random_3002(b: &mut test::Bencher) {
+//     rbd::<3002>(b);
+// }
