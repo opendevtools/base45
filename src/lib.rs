@@ -20,8 +20,8 @@ pub mod alphabet;
 mod decode;
 mod encode;
 
-pub use decode::{decode, DecodeError};
-pub use encode::{encode, encode_from_buffer};
+pub use decode::*;
+pub use encode::*;
 
 #[cfg(test)]
 extern crate test;

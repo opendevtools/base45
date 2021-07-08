@@ -30,6 +30,7 @@ fn encode_buffer(input: &[u8]) -> String {
     for c in input {
         #[cfg(feature = "array_chunks")]
         let c = *c;
+        // SAFETY: `chunks_exact` always returns exactly that number of items.
         #[cfg(not(feature = "array_chunks"))]
         let c = unsafe { [*c.get_unchecked(0), *c.get_unchecked(1)] };
         core_fn(c, &mut s);
@@ -66,12 +67,20 @@ pub fn encode(input: impl AsRef<[u8]>) -> String {
 ///
 /// The function takes an arbitrary buffer and encodes it to base45.
 ///
+/// ## Updates
+///
+/// As of v3.1.0, this function is exactly eqivalent to encode.
+///
 /// ```rust,no_run
 /// # fn main() {
 /// let encoded = base45::encode_from_buffer(vec![72,101,108,108,111,33,33]);
 /// assert_eq!(encoded, "%69 VD92EX0");
 /// # }
 /// ```
+#[deprecated(
+    since = "3.1.0",
+    note = "Equivalent to `encode`. Use `encode` instead."
+)]
 pub fn encode_from_buffer(input: impl AsRef<[u8]>) -> String {
     encode_buffer(input.as_ref())
 }
