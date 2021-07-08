@@ -30,10 +30,10 @@ pub fn decode(input: impl AsRef<[u8]>) -> Result<Vec<u8>, DecodeError> {
 /// Internal function to decode a string from base45, to reduce code bloat.
 fn decode_intl(input: &[u8]) -> Result<Vec<u8>, DecodeError> {
     // Setup indexing
-    let input_as_idx: Vec<usize> = input
+    let input_as_idx: Vec<_> = input
         .iter()
         .map(|v| alphabet::decode(*v).ok_or(DecodeError))
-        .collect::<Result<Vec<usize>, DecodeError>>()?;
+        .collect::<Result<Vec<_>, DecodeError>>()?;
     let mut output = Vec::with_capacity(match input.len() & 1 {
         0 => input.len() * 2 / 3,
         1 => 1 + input.len() * 2 / 3,
@@ -41,8 +41,8 @@ fn decode_intl(input: &[u8]) -> Result<Vec<u8>, DecodeError> {
         _ => unsafe { core::hint::unreachable_unchecked() },
     });
 
-    fn core_fn([_0, _1, _2]: [usize; 3]) -> Result<[u8; 2], DecodeError> {
-        let v = _0 + _1 * SIZE + _2 * SIZE_SIZE;
+    fn core_fn([_0, _1, _2]: [u8; 3]) -> Result<[u8; 2], DecodeError> {
+        let v = (_0 as u32) + (_1 as u32 * SIZE) + (_2 as u32) * SIZE_SIZE;
         if (0..=65792).contains(&v) {
             let x = (v >> 8) & 0xFF;
             let y = v & 0xFF;
@@ -75,7 +75,7 @@ fn decode_intl(input: &[u8]) -> Result<Vec<u8>, DecodeError> {
         output.push(y);
     }
     match remainder {
-        &[_0, _1] => output.push((_0 + _1 * SIZE) as u8),
+        &[_0, _1] => output.push((_0 as u32 + (_1 as u32 * SIZE)) as u8),
         &[] => {}
         _ => return Err(DecodeError),
     }

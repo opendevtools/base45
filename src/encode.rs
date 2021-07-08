@@ -1,6 +1,6 @@
 use crate::alphabet::{self, SIZE, SIZE_SIZE};
-fn divmod<const N: usize>(x: usize) -> (usize, usize) {
-    (x / N as usize, x % N)
+fn divmod<const N: u32>(x: u32) -> (u32, u32) {
+    (x / N, x % N)
 }
 
 fn encode_buffer(input: &[u8]) -> String {
@@ -15,12 +15,12 @@ fn encode_buffer(input: &[u8]) -> String {
     // Core function
     #[inline(always)]
     fn core_fn([_0, _1]: [u8; 2], s: &mut String) {
-        let v = (_0 as usize * 256) + _1 as usize;
+        let v = (_0 as u32 * 256) + _1 as u32;
         let (e, rest) = divmod::<SIZE_SIZE>(v);
         let (d, c) = divmod::<SIZE>(rest);
 
         for b in [c, d, e] {
-            if let Some(ch) = alphabet::encode(b) {
+            if let Some(ch) = alphabet::encode(b as u8) {
                 s.push(ch as _);
             }
         }
@@ -36,10 +36,10 @@ fn encode_buffer(input: &[u8]) -> String {
     }
     // Final byte
     if let &[_0] = rem {
-        let (d, c) = divmod::<SIZE>(_0 as usize);
+        let (d, c) = divmod::<SIZE>(_0 as u32);
 
         for b in [c, d] {
-            if let Some(ch) = alphabet::encode(b) {
+            if let Some(ch) = alphabet::encode(b as u8) {
                 s.push(ch as _);
             }
         }
