@@ -19,3 +19,7 @@ criterion = "0.3"
 [[bench]]
 name = "bench"
 harness = false
+
+[features]
+#default = ["array_chunks"]
+array_chunks = []
