@@ -10,18 +10,23 @@ fn encode_buffer(input: &[u8]) -> String {
     #[cfg(not(feature = "array_chunks"))]
     let input = input.chunks_exact(2);
 
-    let mut s = String::with_capacity(input.len() + ((input.len() + 1) / 2));
+    let mut s = Vec::with_capacity(input.len() + ((input.len() + 1) / 2));
 
     // Core function
     #[inline(always)]
-    fn core_fn([_0, _1]: [u8; 2], s: &mut String) {
+    fn core_fn([_0, _1]: [u8; 2], s: &mut Vec<u8>) {
         let v = (_0 as u32 * 256) + _1 as u32;
         let (e, rest) = divmod::<SIZE_SIZE>(v);
         let (d, c) = divmod::<SIZE>(rest);
 
         for b in [c, d, e] {
-            if let Some(ch) = alphabet::encode(b as u8) {
-                s.push(ch as _);
+            match alphabet::encode(b as u8) {
+                Some(ch) => s.push(ch),
+                // SAFETY: encode for this is highly unlikely to ever reach this point.
+                #[cfg(not(test))]
+                None => unsafe { core::hint::unreachable_unchecked() },
+                #[cfg(test)]
+                None => unreachable!(),
             }
         }
     }
@@ -40,12 +45,18 @@ fn encode_buffer(input: &[u8]) -> String {
         let (d, c) = divmod::<SIZE>(_0 as u32);
 
         for b in [c, d] {
-            if let Some(ch) = alphabet::encode(b as u8) {
-                s.push(ch as _);
+            match alphabet::encode(b as u8) {
+                Some(ch) => s.push(ch),
+                // SAFETY: encode for this is highly unlikely to ever reach this point.
+                #[cfg(not(test))]
+                None => unsafe { core::hint::unreachable_unchecked() },
+                #[cfg(test)]
+                None => unreachable!(),
             }
         }
     }
-    s
+    // SAFETY: we control all bytes that enter this vector.
+    unsafe { String::from_utf8_unchecked(s) }
 }
 
 /// Encode a string to base45

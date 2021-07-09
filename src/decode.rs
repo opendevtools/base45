@@ -41,6 +41,7 @@ fn decode_intl(input: &[u8]) -> Result<Vec<u8>, DecodeError> {
         _ => unsafe { core::hint::unreachable_unchecked() },
     });
 
+    #[inline(always)]
     fn core_fn([_0, _1, _2]: [u8; 3]) -> Result<[u8; 2], DecodeError> {
         let v = (_0 as u32) + (_1 as u32 * SIZE) + (_2 as u32) * SIZE_SIZE;
         if (0..=65792).contains(&v) {

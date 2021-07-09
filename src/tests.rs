@@ -96,6 +96,25 @@ fn encode_hello_from_buffer() {
     )
 }
 
+#[test]
+fn encode_full_bytes() {
+    let s = encode(b"\xff\xff\xff\xff\xff\xff");
+    assert_eq!(s, "FGWFGWFGW");
+    let s = encode(b"\xff\xff\xff\xff\xff\xff\xff");
+    assert_eq!(s, "FGWFGWFGWU5");
+    let s = encode(b"\xff\xff\xff\xff\xff\xff\xff\xff");
+    assert_eq!(s, "FGWFGWFGWFGW");
+}
+#[test]
+fn decode_full_bytes() {
+    let s = decode("FGWFGWFGW").unwrap();
+    assert_eq!(s, b"\xff\xff\xff\xff\xff\xff");
+    let s = decode("FGWFGWFGWU5").unwrap();
+    assert_eq!(s, b"\xff\xff\xff\xff\xff\xff\xff");
+    let s = decode("FGWFGWFGWFGW").unwrap();
+    assert_eq!(s, b"\xff\xff\xff\xff\xff\xff\xff\xff");
+}
+
 #[bench]
 fn bench_encode_quick_brown_fox(b: &mut test::Bencher) {
     b.iter(|| {
