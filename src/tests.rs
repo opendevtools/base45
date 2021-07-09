@@ -165,7 +165,7 @@ fn bench_decode_quick_brown_fox(b: &mut test::Bencher) {
     });
 }
 
-// cursed code, really doesn't work
+// cursed code, quickly becomes degenerate.
 
 // fn rbd<const N: usize>(bench: &mut test::Bencher) {
 //     use rand::{distributions::*, *};
