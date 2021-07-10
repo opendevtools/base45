@@ -29,11 +29,6 @@ pub fn decode(input: impl AsRef<[u8]>) -> Result<Vec<u8>, DecodeError> {
 }
 /// Internal function to decode a string from base45, to reduce code bloat.
 fn decode_intl(input: &[u8]) -> Result<Vec<u8>, DecodeError> {
-    // Setup indexing
-    let input_as_idx: Vec<_> = input
-        .iter()
-        .map(|v| alphabet::decode(*v).ok_or(DecodeError))
-        .collect::<Result<Vec<_>, DecodeError>>()?;
     let mut output = Vec::with_capacity(match input.len() & 1 {
         0 => input.len() * 2 / 3,
         1 => 1 + input.len() * 2 / 3,
@@ -44,7 +39,7 @@ fn decode_intl(input: &[u8]) -> Result<Vec<u8>, DecodeError> {
     #[inline(always)]
     fn core_fn([_0, _1, _2]: [u8; 3]) -> Result<[u8; 2], DecodeError> {
         let v = (_0 as u32) + (_1 as u32 * SIZE) + (_2 as u32) * SIZE_SIZE;
-        if (0..=65792).contains(&v) {
+        if v <= (u16::MAX as _) {
             let x = (v >> 8) & 0xFF;
             let y = v & 0xFF;
             Ok([x as u8, y as u8])
@@ -52,31 +47,33 @@ fn decode_intl(input: &[u8]) -> Result<Vec<u8>, DecodeError> {
             Err(DecodeError)
         }
     }
+    //short
+    #[inline(always)]
+    fn preproc([a, b, c]: [u8; 3]) -> Result<[u8; 3], DecodeError> {
+        Ok([d(a)?, d(b)?, d(c)?])
+    }
+    //short
+    #[inline(always)]
+    fn d(v: u8) -> Result<u8, DecodeError> {
+        alphabet::decode(v).ok_or(DecodeError)
+    }
 
     #[cfg(feature = "array_chunks")]
-    let chunks = input_as_idx.array_chunks::<3>();
+    let (chunks, pre) = (input.array_chunks(), |&b| preproc(b));
     #[cfg(not(feature = "array_chunks"))]
-    let chunks = input_as_idx.chunks_exact(3);
+    let (chunks, pre) = (input.chunks_exact(3), |slic: &[u8]| match slic {
+        &[a, b, c] => preproc([a, b, c]),
+        // SAFETY: chunks_exact ensures every `.next()` returns an effective &[T] where `.len` == 3
+        _ => unsafe { core::hint::unreachable_unchecked() },
+    });
 
     let remainder = chunks.remainder();
-    for c in chunks {
-        #[cfg(feature = "array_chunks")]
-        let c = *c;
-        // SAFETY: chunks_exact ensures every `.next()` returns an effective &[T] where `.len` == 3
-        #[cfg(not(feature = "array_chunks"))]
-        let c = unsafe {
-            [
-                *c.get_unchecked(0),
-                *c.get_unchecked(1),
-                *c.get_unchecked(2),
-            ]
-        };
-        let [x, y] = core_fn(c)?;
-        output.push(x);
-        output.push(y);
+    for c in chunks.map(pre) {
+        let xy = core_fn(c?)?;
+        output.extend_from_slice(&xy);
     }
     match remainder {
-        &[_0, _1] => output.push((_0 as u32 + (_1 as u32 * SIZE)) as u8),
+        &[_0, _1] => output.push((d(_0)? as u32 + (d(_1)? as u32 * SIZE)) as u8),
         &[] => {}
         _ => return Err(DecodeError),
     }
