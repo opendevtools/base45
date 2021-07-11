@@ -1,6 +1,6 @@
 [package]
 name = "base45"
-version ="3.0.0"
+version ="3.1.0"
 authors = ["Rickard Natt och Dag <rickard@hey.com>"]
 edition = "2018"
 description = "Encoder/decoder for base45"
@@ -15,7 +15,12 @@ categories = ["encoding"]
 
 [dev-dependencies]
 criterion = "0.3"
+rand = "0.8"
 
 [[bench]]
 name = "bench"
 harness = false
+
+[features]
+#default = ["array_chunks"]
+array_chunks = []

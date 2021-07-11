@@ -1,3 +1,14 @@
+# [3.1.0](https://github.com/ZaneHannanAU/base45/compare/v3.0.0...v3.1.0) (2021-07-09)
+
+### Features
+
+* add feature `array_chunks`
+* split encode & decode into their own files
+
+### Bug Fixes
+
+* improve allocation efficacy
+
 # [3.0.0](https://github.com/opendevtools/base45/compare/v2.0.1...v3.0.0) (2021-06-03)
 
 
