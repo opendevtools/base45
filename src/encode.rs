@@ -3,6 +3,17 @@ fn divmod<const N: u32>(x: u32) -> (u32, u32) {
     (x / N, x % N)
 }
 
+fn ae(b: u8) -> u8 {
+    match alphabet::encode(b as u8) {
+        Some(ch) => ch,
+        // SAFETY: encode for this is highly unlikely to ever reach this point.
+        #[cfg(not(test))]
+        None => unsafe { core::hint::unreachable_unchecked() },
+        #[cfg(test)]
+        None => unreachable!(),
+    }
+}
+
 fn encode_buffer(input: &[u8]) -> String {
     // setup
     #[cfg(feature = "array_chunks")]
@@ -19,16 +30,7 @@ fn encode_buffer(input: &[u8]) -> String {
         let (e, rest) = divmod::<SIZE_SIZE>(v);
         let (d, c) = divmod::<SIZE>(rest);
 
-        for b in [c, d, e] {
-            match alphabet::encode(b as u8) {
-                Some(ch) => s.push(ch),
-                // SAFETY: encode for this is highly unlikely to ever reach this point.
-                #[cfg(not(test))]
-                None => unsafe { core::hint::unreachable_unchecked() },
-                #[cfg(test)]
-                None => unreachable!(),
-            }
-        }
+        s.extend_from_slice(&[ae(c as _), ae(d as _), ae(e as _)]);
     }
     // take remainder AoT
     let rem = input.remainder();
@@ -44,16 +46,7 @@ fn encode_buffer(input: &[u8]) -> String {
     if let &[_0] = rem {
         let (d, c) = divmod::<SIZE>(_0 as u32);
 
-        for b in [c, d] {
-            match alphabet::encode(b as u8) {
-                Some(ch) => s.push(ch),
-                // SAFETY: encode for this is highly unlikely to ever reach this point.
-                #[cfg(not(test))]
-                None => unsafe { core::hint::unreachable_unchecked() },
-                #[cfg(test)]
-                None => unreachable!(),
-            }
-        }
+        s.extend_from_slice(&[ae(c as _), ae(d as _)]);
     }
     // SAFETY: we control all bytes that enter this vector.
     unsafe { String::from_utf8_unchecked(s) }

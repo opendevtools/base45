@@ -90,10 +90,7 @@ fn decode_long_string() {
 
 #[test]
 fn encode_hello_from_buffer() {
-    assert_eq!(
-        encode_from_buffer(vec![72, 101, 108, 108, 111, 33, 33]),
-        "%69 VD92EX0"
-    )
+    assert_eq!(encode(vec![72, 101, 108, 108, 111, 33, 33]), "%69 VD92EX0")
 }
 
 #[test]
@@ -113,56 +110,6 @@ fn decode_full_bytes() {
     assert_eq!(s, b"\xff\xff\xff\xff\xff\xff\xff");
     let s = decode("FGWFGWFGWFGW").unwrap();
     assert_eq!(s, b"\xff\xff\xff\xff\xff\xff\xff\xff");
-}
-
-#[bench]
-fn bench_encode_quick_brown_fox(b: &mut test::Bencher) {
-    b.iter(|| {
-        for _ in 0..100 {
-            let text = String::from(QUICK_BROWN_FOX_DEC);
-            let encoded = encode(&text);
-            assert_eq!(encoded, QUICK_BROWN_FOX_ENC);
-        }
-    });
-}
-
-fn rbe<const N: usize>(bench: &mut test::Bencher) {
-    use rand::*;
-    let mut rng = thread_rng();
-    let mut b = [0u8; N];
-    rng.fill_bytes(&mut b);
-    bench.iter(|| {
-        let encoded = encode_from_buffer(&b[..]);
-        assert!(encoded.is_ascii());
-    });
-}
-#[bench]
-fn bench_encode_random_0x10(b: &mut test::Bencher) {
-    rbe::<0x10>(b);
-}
-#[bench]
-fn bench_encode_random_0x100(b: &mut test::Bencher) {
-    rbe::<0x100>(b);
-}
-#[bench]
-fn bench_encode_random_0x1000(b: &mut test::Bencher) {
-    rbe::<0x1000>(b);
-}
-#[bench]
-fn bench_encode_random_0x10000(b: &mut test::Bencher) {
-    rbe::<0x10000>(b);
-}
-
-#[bench]
-fn bench_decode_quick_brown_fox(b: &mut test::Bencher) {
-    b.iter(|| {
-        for _ in 0..100 {
-            let text = String::from(QUICK_BROWN_FOX_ENC);
-            if let Ok(decoded) = decode(&text) {
-                assert_eq!(decoded, QUICK_BROWN_FOX_DEC.as_bytes());
-            }
-        }
-    });
 }
 
 // cursed code, quickly becomes degenerate.
