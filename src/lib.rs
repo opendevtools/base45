@@ -24,6 +24,4 @@ pub use decode::*;
 pub use encode::*;
 
 #[cfg(test)]
-extern crate test;
-#[cfg(test)]
 mod tests;
