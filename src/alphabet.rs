@@ -56,7 +56,7 @@ pub const fn decode(v: u8) -> Option<u8> {
 
 pub fn encode(n: u8) -> Option<u8> {
     //#[cfg(feature = "bin_table")]
-    TABLE.get(n as usize).map(|&c| c)
+    TABLE.get(n as usize).copied()
     // very fast, literal index pointer
 }
 

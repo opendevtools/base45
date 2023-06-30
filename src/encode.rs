@@ -4,7 +4,7 @@ fn divmod<const N: u32>(x: u32) -> (u32, u32) {
 }
 
 fn ae(b: u8) -> u8 {
-    match alphabet::encode(b as u8) {
+    match alphabet::encode(b) {
         Some(ch) => ch,
         // SAFETY: encode for this is highly unlikely to ever reach this point.
         #[cfg(not(test))]
@@ -25,8 +25,8 @@ fn encode_buffer(input: &[u8]) -> String {
 
     // Core function
     #[inline(always)]
-    fn core_fn([_0, _1]: [u8; 2], s: &mut Vec<u8>) {
-        let v = (_0 as u32 * 256) + _1 as u32;
+    fn core_fn([_first, _second]: [u8; 2], s: &mut Vec<u8>) {
+        let v = (_first as u32 * 256) + _second as u32;
         let (e, rest) = divmod::<SIZE_SIZE>(v);
         let (d, c) = divmod::<SIZE>(rest);
 

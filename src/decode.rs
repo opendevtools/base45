@@ -37,8 +37,8 @@ fn decode_intl(input: &[u8]) -> Result<Vec<u8>, DecodeError> {
     });
 
     #[inline(always)]
-    fn core_fn([_0, _1, _2]: [u8; 3]) -> Result<[u8; 2], DecodeError> {
-        let v = (_0 as u32) + (_1 as u32 * SIZE) + (_2 as u32) * SIZE_SIZE;
+    fn core_fn([_first, _second, _third]: [u8; 3]) -> Result<[u8; 2], DecodeError> {
+        let v = (_first as u32) + (_second as u32 * SIZE) + (_third as u32) * SIZE_SIZE;
         if v <= (u16::MAX as _) {
             let x = (v >> 8) & 0xFF;
             let y = v & 0xFF;
@@ -73,8 +73,8 @@ fn decode_intl(input: &[u8]) -> Result<Vec<u8>, DecodeError> {
         output.extend_from_slice(&xy);
     }
     match remainder {
-        &[_0, _1] => output.push((d(_0)? as u32 + (d(_1)? as u32 * SIZE)) as u8),
-        &[] => {}
+        [_first, _second] => output.push((d(*_first)? as u32 + (d(*_second)? as u32 * SIZE)) as u8),
+        [] => {}
         _ => return Err(DecodeError),
     }
 
