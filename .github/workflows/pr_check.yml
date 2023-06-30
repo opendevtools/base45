@@ -2,7 +2,7 @@ name: Run tests on PR
 
 on:
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 env:
   CARGO_TERM_COLOR: always
@@ -13,7 +13,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
+
       - name: Setup Rust (nightly)
         uses: actions-rs/toolchain@v1
         with:

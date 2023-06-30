@@ -2,7 +2,7 @@ name: Release
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
 
 env:
   CARGO_TERM_COLOR: always
@@ -17,7 +17,8 @@ jobs:
       new_release_published: ${{ steps.semantic.outputs.new_release_published }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
+
       - name: Setup Rust (nightly)
         uses: actions-rs/toolchain@v1
         with:
@@ -54,6 +55,6 @@ jobs:
       - name: Push updated Cargo.lock
         uses: EndBug/add-and-commit@v5
         with:
-          message: 'chore(release): update lockfile'
+          message: "chore(release): update lockfile"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
