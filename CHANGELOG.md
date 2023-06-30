@@ -1,3 +1,11 @@
+# [3.1.0](https://github.com/opendevtools/base45/compare/v3.0.0...v3.1.0) (2023-06-30)
+
+
+### Features
+
+* `array_chunks` (performance feature), `alloc` improvements ([#3](https://github.com/opendevtools/base45/issues/3)) ([9e0e933](https://github.com/opendevtools/base45/commit/9e0e9333243f87c485c32ef2ed208ed3a1d509f2))
+* performance improvements ([#2](https://github.com/opendevtools/base45/issues/2)) ([63db6f2](https://github.com/opendevtools/base45/commit/63db6f2495a593d7df7acb506716687d8fef3033))
+
 # [3.0.0](https://github.com/opendevtools/base45/compare/v2.0.1...v3.0.0) (2021-06-03)
 
 ### Features
