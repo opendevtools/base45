@@ -2,7 +2,7 @@ name: Run tests on PR
 
 on:
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 env:
   CARGO_TERM_COLOR: always

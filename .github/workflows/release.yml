@@ -2,7 +2,7 @@ name: Release
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
 
 env:
   CARGO_TERM_COLOR: always
@@ -54,6 +54,6 @@ jobs:
       - name: Push updated Cargo.lock
         uses: EndBug/add-and-commit@v5
         with:
-          message: 'chore(release): update lockfile'
+          message: "chore(release): update lockfile"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
