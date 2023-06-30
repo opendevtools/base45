@@ -1,9 +1,8 @@
 /// Table of characters (by index). Currently unused.
 pub const TABLE: [u8; 45] = *b"0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ $%*+-./:";
+
 /// Decode a byte to its index.
 pub const fn decode(v: u8) -> Option<u8> {
-    //let ret = TABLE.iter().position(|&r| r == v).map(|i| i as _);
-
     // table statements are fast, but use more space. Enabled by default.
     Some(match v {
         b'0' => 0,
