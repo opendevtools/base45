@@ -16,10 +16,18 @@ base45 = "1.0.1"
 
 ## Benchmarks
 
-Benchmarks were created using [Criterion](https://github.com/bheisler/criterion.rs). The benchmarks test encoding and decoding of the string "The quick brown fox jumps over the lazy dog". Test computer is a MacBook 16" (2019) with 2,6 GHz 6-Core Intel Core i7 and 32 GB 2667 MHz DDR4.
+Benchmarks were created using [Criterion](https://github.com/bheisler/criterion.rs). The benchmarks test encoding and decoding of the string "The quick brown fox jumps over the lazy dog". Test computer is a MacBook Pro 14" (2021) M1 Pro with 32 GB RAM.
 
 ```
-encode long string                time:   [6.0716 us 6.1040 us 6.1377 us]
-encode long string from buffer    time:   [6.0220 us 6.0547 us 6.0885 us]
-decode long string                time:   [1.0876 us 1.0993 us 1.1105 us]
+encode long string              time:   [107.51 ns 107.69 ns 107.91 ns]
+encode long string from buffer  time:   [126.66 ns 126.84 ns 127.07 ns]
+decode long string              time:   [115.58 ns 115.81 ns 116.08 ns]
+
+encode long str 100 times       time:   [12.805 µs 12.821 µs 12.839 µs]
+decode long str 100 times       time:   [12.407 µs 12.424 µs 12.445 µs]
+
+encode 0x10 random bytes        time:   [57.717 ns 57.827 ns 57.946 ns]
+encode 0x100 random bytes       time:   [292.00 ns 292.64 ns 293.50 ns]
+encode 0x1000 random bytes      time:   [3.6926 µs 3.6962 µs 3.7001 µs]
+encode 0x10000 random bytes     time:   [65.210 µs 65.476 µs 65.755 µs]
 ```
