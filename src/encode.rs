@@ -1,25 +1,25 @@
 use crate::alphabet::{self, SIZE, SIZE_SIZE};
+
+#[inline(always)]
 fn divmod<const N: u32>(x: u32) -> (u32, u32) {
     (x / N, x % N)
 }
 
+#[inline(always)]
 fn ae(b: u8) -> u8 {
     match alphabet::encode(b) {
         Some(ch) => ch,
+        #[cfg(feature = "unsafe")]
         // SAFETY: encode for this is highly unlikely to ever reach this point.
-        #[cfg(not(test))]
         None => unsafe { core::hint::unreachable_unchecked() },
-        #[cfg(test)]
+        #[cfg(not(feature = "unsafe"))]
         None => unreachable!(),
     }
 }
 
 fn encode_buffer(input: &[u8]) -> String {
     // setup
-    #[cfg(feature = "array_chunks")]
-    let input = input.array_chunks::<2>();
-    #[cfg(not(feature = "array_chunks"))]
-    let input = input.chunks_exact(2);
+    let (input, remainder) = input.as_chunks::<2>();
 
     let mut s = Vec::with_capacity(input.len() + ((input.len() + 1) / 2));
 
@@ -33,23 +33,21 @@ fn encode_buffer(input: &[u8]) -> String {
         s.extend_from_slice(&[ae(c as _), ae(d as _), ae(e as _)]);
     }
     // take remainder AoT
-    let rem = input.remainder();
     for c in input {
-        #[cfg(feature = "array_chunks")]
-        let c = *c;
-        // SAFETY: `chunks_exact` always returns exactly that number of items.
-        #[cfg(not(feature = "array_chunks"))]
-        let c = unsafe { [*c.get_unchecked(0), *c.get_unchecked(1)] };
-        core_fn(c, &mut s);
+
+        core_fn(*c, &mut s);
     }
     // Final byte
-    if let &[_0] = rem {
+    if let &[_0] = remainder {
         let (d, c) = divmod::<SIZE>(_0 as u32);
 
         s.extend_from_slice(&[ae(c as _), ae(d as _)]);
     }
+    #[cfg(feature = "unsafe")]
     // SAFETY: we control all bytes that enter this vector.
     unsafe { String::from_utf8_unchecked(s) }
+    #[cfg(not(feature = "unsafe"))]
+    String::from_utf8(s).expect("All bytes encoded must be ascii")
 }
 
 /// Encode a string to base45

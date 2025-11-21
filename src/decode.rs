@@ -32,8 +32,11 @@ fn decode_intl(input: &[u8]) -> Result<Vec<u8>, DecodeError> {
     let mut output = Vec::with_capacity(match input.len() & 1 {
         0 => input.len() * 2 / 3,
         1 => 1 + input.len() * 2 / 3,
+        #[cfg(feature = "unsafe")]
         // SAFETY: it's one of 0 or 1. There are no other options.
         _ => unsafe { core::hint::unreachable_unchecked() },
+        #[cfg(not(feature = "unsafe"))]
+        _ => unreachable!()
     });
 
     #[inline(always)]
@@ -58,17 +61,9 @@ fn decode_intl(input: &[u8]) -> Result<Vec<u8>, DecodeError> {
         alphabet::decode(v).ok_or(DecodeError)
     }
 
-    #[cfg(feature = "array_chunks")]
-    let (chunks, pre) = (input.array_chunks(), |&b| preproc(b));
-    #[cfg(not(feature = "array_chunks"))]
-    let (chunks, pre) = (input.chunks_exact(3), |slic: &[u8]| match slic {
-        &[a, b, c] => preproc([a, b, c]),
-        // SAFETY: chunks_exact ensures every `.next()` returns an effective &[T] where `.len` == 3
-        _ => unsafe { core::hint::unreachable_unchecked() },
-    });
+    let ((chunks, remainder), pre) = (input.as_chunks::<3>(), |&b| preproc(b));
 
-    let remainder = chunks.remainder();
-    for c in chunks.map(pre) {
+    for c in chunks.iter().map(pre) {
         let xy = core_fn(c?)?;
         output.extend_from_slice(&xy);
     }
