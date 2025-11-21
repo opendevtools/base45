@@ -1,5 +1,3 @@
-#![cfg_attr(feature = "array_chunks", feature(array_chunks))]
-#![cfg_attr(test, feature(test))]
 //! Encoder/decoder for base45 that is fully compatible with
 //! [`draft-faltstrom-base45-07.txt`](https://www.ietf.org/archive/id/draft-faltstrom-base45-07.txt)
 //!
