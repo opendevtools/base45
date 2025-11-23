@@ -1,6 +1,8 @@
 use crate::alphabet::{self, SIZE, SIZE_SIZE};
 
-#[inline(always)]
+#[cfg(not(feature = "std"))]
+use alloc::{string::String, vec::Vec};
+
 fn divmod<const N: u32>(x: u32) -> (u32, u32) {
     (x / N, x % N)
 }

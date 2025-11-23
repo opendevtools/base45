@@ -1,4 +1,6 @@
 use crate::*;
+#[cfg(not(feature = "std"))]
+use alloc::{vec, string::String};
 
 #[test]
 fn encode_ab() {

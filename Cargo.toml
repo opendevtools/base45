@@ -22,6 +22,7 @@ name = "bench"
 harness = false
 
 [features]
-# depcrecated, will be removed in a future release
+default = ["std"]
+std = []
 array_chunks = []
 unsafe = []
