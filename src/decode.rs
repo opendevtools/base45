@@ -1,24 +1,27 @@
 use crate::alphabet::{self, SIZE, SIZE_SIZE};
-use std::error::Error;
-use std::fmt::{Display, Formatter};
+
+#[cfg(not(feature = "std"))]
+use alloc::vec::Vec;
+
+use core::fmt::{Display, Formatter};
 /// The error type returned when the input is not a valid base45 string
 #[derive(Eq, PartialEq, Copy, Clone, Debug)]
 pub struct DecodeError;
 
 impl Display for DecodeError {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
         f.write_str("Invalid base45 string")
     }
 }
 
-impl Error for DecodeError {}
+impl core::error::Error for DecodeError {}
 
 /// Decode a string from base45
 ///
 /// Takes a base45 encoded string and returns a UTF-8 string on success
 ///
 /// ```rust,no_run
-/// # fn main() -> Result<(), Box<dyn std::error::Error>> {
+/// # fn main() -> Result<(), Box<dyn core::error::Error>> {
 /// let decoded = String::from_utf8(base45::decode("%69 VD92EX0")?)?;
 /// assert_eq!(decoded, "Hello!!");
 /// # Ok(())
