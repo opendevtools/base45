@@ -1,3 +1,10 @@
+# [3.2.0](https://github.com/opendevtools/base45/compare/v3.1.0...v3.2.0) (2025-12-16)
+
+
+### Features
+
+* support no_std ([a5a46c7](https://github.com/opendevtools/base45/commit/a5a46c76c61ad4e430941d4c6d9cc305a7670894))
+
 # [3.1.0](https://github.com/opendevtools/base45/compare/v3.0.0...v3.1.0) (2023-06-30)
 
 
