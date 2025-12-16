@@ -24,5 +24,4 @@ harness = false
 [features]
 default = ["std"]
 std = []
-array_chunks = []
 unsafe = []
