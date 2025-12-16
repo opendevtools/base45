@@ -21,7 +21,7 @@ fn encode_buffer(input: &[u8]) -> String {
     // setup
     let (input, remainder) = input.as_chunks::<2>();
 
-    let mut s = Vec::with_capacity(input.len() + ((input.len() + 1) / 2));
+    let mut s = Vec::with_capacity(input.len() + input.len().div_ceil(2));
 
     // Core function
     #[inline(always)]
@@ -34,7 +34,6 @@ fn encode_buffer(input: &[u8]) -> String {
     }
     // take remainder AoT
     for c in input {
-
         core_fn(*c, &mut s);
     }
     // Final byte
@@ -45,7 +44,9 @@ fn encode_buffer(input: &[u8]) -> String {
     }
     #[cfg(feature = "unsafe")]
     // SAFETY: we control all bytes that enter this vector.
-    unsafe { String::from_utf8_unchecked(s) }
+    unsafe {
+        String::from_utf8_unchecked(s)
+    }
     #[cfg(not(feature = "unsafe"))]
     String::from_utf8(s).expect("All bytes encoded must be ascii")
 }
