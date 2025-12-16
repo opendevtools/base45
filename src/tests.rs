@@ -111,34 +111,3 @@ fn decode_full_bytes() {
     let s = decode("FGWFGWFGWFGW").unwrap();
     assert_eq!(s, b"\xff\xff\xff\xff\xff\xff\xff\xff");
 }
-
-// cursed code, quickly becomes degenerate.
-
-// fn rbd<const N: usize>(bench: &mut test::Bencher) {
-//     use rand::{distributions::*, *};
-//     use std::convert::TryFrom;
-//     let mut rng = thread_rng();
-//     let sample = Slice::new(&crate::alphabet::TABLE).unwrap();
-//     let b: Vec<u8> = sample.sample_iter(rng).copied().take(N).collect();
-//     let b: [u8; N] = TryFrom::try_from(b).unwrap();
-//     bench.iter(|| {
-//         let decoded = decode(&b[..]);
-//         assert!(decoded.is_ok());
-//     });
-// }
-// #[bench]
-// fn bench_decode_random_3(b: &mut test::Bencher) {
-//     rbd::<3>(b);
-// }
-// #[bench]
-// fn bench_decode_random_30(b: &mut test::Bencher) {
-//     rbd::<30>(b);
-// }
-// #[bench]
-// fn bench_decode_random_3000(b: &mut test::Bencher) {
-//     rbd::<3000>(b);
-// }
-// #[bench]
-// fn bench_decode_random_3002(b: &mut test::Bencher) {
-//     rbd::<3002>(b);
-// }
