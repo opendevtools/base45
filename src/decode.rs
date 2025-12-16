@@ -36,7 +36,7 @@ fn decode_intl(input: &[u8]) -> Result<Vec<u8>, DecodeError> {
         // SAFETY: it's one of 0 or 1. There are no other options.
         _ => unsafe { core::hint::unreachable_unchecked() },
         #[cfg(not(feature = "unsafe"))]
-        _ => unreachable!()
+        _ => unreachable!(),
     });
 
     #[inline(always)]
